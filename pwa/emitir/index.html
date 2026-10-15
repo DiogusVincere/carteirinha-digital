@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Secretaria · Carteirinha Digital</title>
+<meta name="description" content="Emissão de carteirinhas estudantis institucionais assinadas digitalmente.">
+<meta name="theme-color" content="#0F766E">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="icon" href="../icons/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../app.css">
+</head>
+<body>
+<header class="topo">
+  <a class="marca" href="../"><span class="marca-icone" aria-hidden="true"></span><span><b>Carteirinha Digital</b><small>secretaria · emissão</small></span></a>
+  <nav><a href="../">Estudante</a><a href="../v/">Verificar</a></nav>
+</header>
+
+<main class="conteudo larga">
+  <h1>Emitir carteirinha</h1>
+  <p class="lead">Preencha, confira a prévia e assine. O estudante recebe um arquivo ou link de ativação; o QR do cartão aponta para a página de verificação.</p>
+  <div id="aviso-chave"></div>
+
+  <div class="duas-colunas">
+    <div>
+      <form id="form" class="painel" autocomplete="off">
+        <h2 style="margin-top:0">Dados do estudante</h2>
+        <div class="campo"><label for="nome">Nome completo</label><input id="nome" required maxlength="80" placeholder="Como está na matrícula"></div>
+        <div class="linha-campos">
+          <div class="campo"><label for="matricula">Matrícula</label><input id="matricula" required maxlength="30" placeholder="2026010123"></div>
+          <div class="campo"><label for="nascimento">Nascimento <span class="ajuda">(opcional)</span></label><input id="nascimento" type="date"></div>
+        </div>
+        <div class="campo"><label for="curso">Curso</label><input id="curso" required maxlength="80" placeholder="Análise e Desenvolvimento de Sistemas"></div>
+        <div class="linha-campos">
+          <div class="campo"><label for="nivel">Nível</label><select id="nivel"></select></div>
+          <div class="campo"><label for="validade">Válida até (mês)</label><input id="validade" type="month" required></div>
+        </div>
+        <div class="campo">
+          <label for="foto">Foto <span class="ajuda">(3×4; é reduzida e fica vinculada à assinatura)</span></label>
+          <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+            <img id="foto-previa" class="foto-previa" alt="" hidden>
+            <input id="foto" type="file" accept="image/*" capture="user" style="flex:1;min-width:200px">
+            <button type="button" class="btn pequeno" id="bt-sem-foto" hidden>Tirar foto</button>
+          </div>
+        </div>
+
+        <h2>Instituição</h2>
+        <div class="linha-campos">
+          <div class="campo"><label for="inst-nome">Nome</label><input id="inst-nome" required maxlength="80"></div>
+          <div class="campo"><label for="inst-sigla">Sigla</label><input id="inst-sigla" maxlength="10"></div>
+        </div>
+        <div class="linha-campos">
+          <div class="campo"><label for="inst-id">Identificador do emissor <span class="ajuda">(igual ao de emissores.js)</span></label><input id="inst-id" required maxlength="40"></div>
+          <div class="campo"><label for="inst-cor">Cor do cartão</label><input id="inst-cor" type="color" value="#0F766E"></div>
+        </div>
+        <div class="campo">
+          <label for="inst-logo">Logotipo da instituição <span class="ajuda">(opcional; vai na faixa do cartão e na entrada do emissor)</span></label>
+          <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+            <img id="logo-previa" alt="" style="width:48px;height:48px;object-fit:contain;border-radius:8px;border:1px solid var(--borda);background:#fff" hidden>
+            <input id="inst-logo" type="file" accept="image/*" style="flex:1;min-width:200px">
+            <button type="button" class="btn pequeno" id="bt-tirar-logo" hidden>Tirar logotipo</button>
+          </div>
+        </div>
+
+        <details id="det-chave">
+          <summary>Chave privada do emissor</summary>
+          <p class="ajuda" style="font-size:13px;color:var(--tinta2)">A chave privada fica só com a instituição (neste navegador, se você salvar). A chave pública vai em <code>emissores.js</code>, e é com ela que todo mundo verifica.</p>
+          <div class="campo"><label for="chave-privada">JWK (EC P-256) com o campo <code>d</code></label><textarea id="chave-privada" spellcheck="false"></textarea></div>
+          <div class="botoes" style="margin-top:4px">
+            <button type="button" class="btn pequeno" id="bt-chave-demo">Usar a chave de demonstração</button>
+            <button type="button" class="btn pequeno" id="bt-gerar-chaves">Gerar par de chaves novo</button>
+            <button type="button" class="btn pequeno" id="bt-copiar-publica">Copiar chave pública</button>
+            <button type="button" class="btn pequeno" id="bt-salvar-emissor">Salvar neste navegador</button>
+            <button type="button" class="btn pequeno" id="bt-esquecer-emissor">Esquecer</button>
+          </div>
+          <div id="publica-nova" hidden>
+            <p style="font-size:13px;margin:8px 0 4px">Entrada para o <code>emissores.js</code> do seu deploy (ou para “Adicionar emissor” na página de verificação):</p>
+            <pre class="codigo-bloco" id="publica-texto"></pre>
+          </div>
+        </details>
+
+        <p class="erro-form" id="erro" hidden></p>
+        <div class="botoes" style="margin-bottom:0">
+          <button type="submit" class="btn principal">Emitir e assinar</button>
+          <button type="button" class="btn" id="bt-limpar">Limpar</button>
+          <button type="button" class="btn" id="bt-preencher-exemplo">Preencher com exemplo</button>
+        </div>
+      </form>
+
+      <section id="resultado" class="painel" hidden>
+        <h2 style="margin-top:0">Carteirinha emitida</h2>
+        <p style="font-size:14px;color:var(--tinta2)">Entregue ao estudante por um canal seguro (e-mail institucional, portal do aluno). O arquivo é o mais prático; o link funciona onde não dá para anexar.</p>
+        <div class="qr-resultado" id="qr-resultado"></div>
+        <p style="text-align:center;font-size:12px;color:var(--tinta2);margin:0 0 10px" id="qr-info"></p>
+        <div class="botoes">
+          <button type="button" class="btn principal" id="bt-baixar">Baixar arquivo de ativação</button>
+          <button type="button" class="btn" id="bt-copiar-link">Copiar link de ativação</button>
+          <button type="button" class="btn" id="bt-baixar-qr">Baixar QR (PNG)</button>
+          <a class="btn" id="lk-abrir-app" href="../" target="_blank" rel="noopener">Abrir no app do estudante</a>
+          <a class="btn" id="lk-verificar" href="../v/" target="_blank" rel="noopener">Testar a verificação</a>
+        </div>
+        <details><summary>Código da carteirinha (token)</summary><pre class="codigo-bloco" id="token-texto"></pre></details>
+      </section>
+    </div>
+
+    <div class="previa-fixa">
+      <h2 style="margin-top:0">Prévia</h2>
+      <div class="cartao-caixa">
+        <div class="cartao" id="cartao" role="button" tabindex="0" aria-label="Prévia da carteirinha. Toque para virar."></div>
+        <p class="dica-virar">Toque para virar. O QR aparece depois de assinar.</p>
+      </div>
+      <div class="painel" style="font-size:13px;color:var(--tinta2)">
+        <b style="color:var(--tinta)">O que vai no QR</b>
+        <ul class="lista-simples">
+          <li>Nome, matrícula, curso, nível, validade, nascimento (se informado) e o código da foto.</li>
+          <li>A assinatura da instituição (ECDSA P-256).</li>
+          <li><strong>Não vai</strong> a foto em si: ela fica no aparelho do estudante, vinculada pelo código.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer class="rodape">
+  <p>Carteirinha institucional. Não é a Carteira de Identificação Estudantil (CIE) da Lei 12.933/2013 e não dá direito à meia-entrada.</p>
+</footer>
+<script type="module" src="emitir.js"></script>
+</body>
+</html>

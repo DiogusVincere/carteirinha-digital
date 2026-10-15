@@ -1,0 +1,16 @@
+# Cabeçalhos servidos pelo Cloudflare (Workers com assets estáticos e Pages leem este arquivo).
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: no-referrer
+  Permissions-Policy: camera=(self), microphone=()
+
+# o que precisa chegar sempre novo (o service worker atualiza o resto em segundo plano)
+/sw.js
+  Cache-Control: no-cache
+/emissores.js
+  Cache-Control: no-cache
+/revogadas.json
+  Cache-Control: no-cache
+
+/manifest.webmanifest
+  Content-Type: application/manifest+json

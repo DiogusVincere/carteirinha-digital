@@ -1,0 +1,11 @@
+{
+  "aviso": "Chave PRIVADA do emissor de demonstração. É pública de propósito: carteirinhas assinadas com ela valem só como exemplo.",
+  "emissor": "iet-demo",
+  "privada": {
+    "kty": "EC",
+    "crv": "P-256",
+    "x": "VcJQ3LbG2-d5yAdTVHDTkaflFGDjEElNl4eBE5XUqDE",
+    "y": "7D8rhcY-I87919HqAR2kLunDWfMr9rx4wc0gbNUGrHU",
+    "d": "YR5Pf95y2m7JT6X9Roy6_f3rEvoRtoeq4PE_vwzd0cA"
+  }
+}

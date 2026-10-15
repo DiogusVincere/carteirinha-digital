@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Verificar · Carteirinha Digital</title>
+<meta name="description" content="Confere a autenticidade de uma carteirinha estudantil institucional pela assinatura digital da instituição, sem servidor.">
+<meta name="theme-color" content="#0F766E">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="icon" href="../icons/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../app.css">
+</head>
+<body>
+<header class="topo">
+  <a class="marca" href="../"><span class="marca-icone" aria-hidden="true"></span><span><b>Carteirinha Digital</b><small>verificação</small></span></a>
+  <nav><a href="../">Estudante</a><a href="../emitir/">Secretaria</a></nav>
+</header>
+
+<main class="conteudo">
+  <section id="sem-token">
+    <h1>Verificar uma carteirinha</h1>
+    <p class="lead">Aponte a câmera do celular para o QR do cartão: ele abre esta página já com o resultado. Também dá para ler aqui ou colar o código.</p>
+    <div class="botoes">
+      <button class="btn principal" id="bt-camera">Ler QR com a câmera</button>
+    </div>
+    <div id="caixa-camera" class="painel" hidden>
+      <video id="video" class="video-qr" playsinline muted></video>
+      <p style="font-size:13px;color:var(--tinta2);margin:8px 0 0" id="estado-camera">Aponte para o QR…</p>
+      <div class="botoes" style="margin-bottom:0"><button class="btn pequeno" id="bt-parar">Parar</button></div>
+    </div>
+    <div class="painel">
+      <div class="campo"><label for="txt-token">Link ou código da carteirinha</label><textarea id="txt-token" placeholder="https://…/v/#eyJ2… ou o código"></textarea></div>
+      <div class="botoes" style="margin:0"><button class="btn" id="bt-verificar">Verificar</button></div>
+    </div>
+  </section>
+
+  <section id="com-resultado" hidden>
+    <div id="resultado"></div>
+    <div class="painel" style="margin-top:12px">
+      <dl class="detalhes" id="detalhes"></dl>
+    </div>
+    <div class="painel" id="painel-revogacao"></div>
+    <div class="painel" id="painel-assinatura" style="font-size:13px;color:var(--tinta2)"></div>
+    <div class="botoes"><button class="btn" id="bt-outra">Verificar outra</button></div>
+  </section>
+
+  <details class="painel" style="margin-top:16px">
+    <summary>Emissores confiáveis neste aparelho</summary>
+    <p style="font-size:13px;color:var(--tinta2)">Uma carteirinha só é considerada autêntica se a assinatura bater com a chave pública de um destes emissores. Os publicados vêm com o app; você pode adicionar outro (por exemplo, a sua instituição, antes de ela entrar na lista publicada).</p>
+    <div class="lista-emissores" id="lista-emissores"></div>
+    <form id="form-emissor" autocomplete="off">
+      <div class="linha-campos">
+        <div class="campo"><label for="em-id">Identificador</label><input id="em-id" required maxlength="40" placeholder="minha-instituicao"></div>
+        <div class="campo"><label for="em-nome">Nome</label><input id="em-nome" required maxlength="80"></div>
+      </div>
+      <div class="campo"><label for="em-chave">Chave pública (JWK ou a entrada copiada da secretaria)</label><textarea id="em-chave" required spellcheck="false"></textarea></div>
+      <p class="erro-form" id="erro-emissor" hidden></p>
+      <button class="btn pequeno" type="submit">Adicionar neste aparelho</button>
+    </form>
+  </details>
+</main>
+
+<footer class="rodape">
+  <p>A verificação confere a assinatura digital da instituição com a chave pública dela, neste aparelho, sem mandar dados a servidor nenhum. Se houver internet, consulta também a lista de carteirinhas canceladas.</p>
+  <p>Carteirinha institucional. Não é a CIE da Lei 12.933/2013 e não dá direito à meia-entrada.</p>
+</footer>
+<script type="module" src="verificar.js"></script>
+</body>
+</html>

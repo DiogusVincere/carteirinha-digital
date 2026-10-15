@@ -1,0 +1,13 @@
+{
+  "name": "carteirinha-digital",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Carteirinha estudantil institucional como PWA: emissão assinada digitalmente, app do estudante offline e verificação por QR code.",
+  "type": "module",
+  "scripts": {
+    "test": "node --test tests/",
+    "demo": "node ferramentas/preparar-demo.mjs",
+    "servir": "python -m http.server 8766 --bind 127.0.0.1"
+  },
+  "license": "MIT"
+}

@@ -1,0 +1,14 @@
+// Publicação no Cloudflare como Worker de arquivos estáticos (igual ao que já se usa para outros sites):
+// Workers & Pages → Create → Import a repository → este repositório. Sem comando de build; o deploy
+// é `npx wrangler deploy`, que lê este arquivo e sobe a pasta pwa/. Para mudar o nome do subdomínio,
+// mude "name" (a URL fica https://<name>.<sua-conta>.workers.dev) ANTES de instalar nos celulares.
+{
+  "$schema": "https://unpkg.com/wrangler@latest/config-schema.json",
+  "name": "carteirinha-digital",
+  "compatibility_date": "2026-10-01",
+  "assets": {
+    "directory": "./pwa",
+    "html_handling": "auto-trailing-slash",
+    "not_found_handling": "404-page"
+  }
+}

@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Carteirinha Digital</title>
+<meta name="description" content="Identificação estudantil institucional no celular: carteirinha assinada digitalmente pela instituição, com QR code que qualquer pessoa verifica, até sem internet.">
+<meta name="theme-color" content="#0F766E">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/icone-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Carteirinha">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<header class="topo">
+  <a class="marca" href="./" aria-current="page"><span class="marca-icone" aria-hidden="true"></span><span><b>Carteirinha Digital</b><small>identificação estudantil institucional</small></span></a>
+  <nav><a href="v/">Verificar</a><a href="emitir/">Secretaria</a></nav>
+</header>
+
+<div id="faixa-offline" class="faixa" hidden>Sem conexão. A carteirinha continua disponível neste aparelho.</div>
+
+<main class="conteudo">
+  <!-- ======== sem carteirinha ======== -->
+  <section id="tela-inicio" hidden>
+    <h1>Sua carteirinha de estudante, no celular, sem depender de sinal.</h1>
+    <p class="lead">A instituição emite e assina. Você ativa aqui uma vez. Quem precisar conferir aponta a câmera para o QR.</p>
+    <div class="botoes">
+      <button class="btn principal" id="bt-ativar">Ativar minha carteirinha</button>
+      <button class="btn" id="bt-exemplo">Ver um exemplo</button>
+    </div>
+    <div class="painel">
+      <h2 style="margin-top:0">Como funciona</h2>
+      <div class="passos">
+        <div class="passo"><b>1</b><span><strong>A secretaria emite.</strong> Preenche os dados, coloca a foto e assina com a chave privada da instituição. Sai um arquivo (ou link) de ativação.</span></div>
+        <div class="passo"><b>2</b><span><strong>Você ativa.</strong> Abre o link ou importa o arquivo neste app. A carteirinha fica guardada só no seu aparelho e funciona offline.</span></div>
+        <div class="passo"><b>3</b><span><strong>Qualquer um verifica.</strong> O QR leva à página de verificação, que confere a assinatura com a chave pública da instituição, sem servidor e sem senha.</span></div>
+      </div>
+      <p class="ajuda" style="font-size:13px;color:var(--tinta2);margin:0">Instale como aplicativo: no Android, “Adicionar à tela inicial”; no iPhone, Compartilhar → “Adicionar à Tela de Início”.</p>
+    </div>
+    <div id="caixa-instalar-inicio" class="botoes" hidden>
+      <button class="btn" id="bt-instalar-inicio">Instalar no celular</button>
+    </div>
+  </section>
+
+  <!-- ======== com carteirinha ======== -->
+  <section id="tela-carteirinha" hidden>
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
+      <h1 style="margin:0;font-size:22px">Minha carteirinha</h1>
+      <span id="situacao"></span>
+    </div>
+    <div id="aviso-carteirinha"></div>
+    <div class="cartao-caixa">
+      <div class="cartao" id="cartao" role="button" tabindex="0" aria-label="Carteirinha. Toque para virar."></div>
+      <p class="dica-virar">Toque no cartão para ver o verso.</p>
+    </div>
+    <div class="botoes">
+      <button class="btn principal" id="bt-qr">Mostrar QR para verificação</button>
+      <button class="btn" id="bt-virar">Virar</button>
+      <button class="btn" id="bt-instalar" hidden>Instalar no celular</button>
+    </div>
+    <div class="painel">
+      <h2 style="margin-top:0">Dados</h2>
+      <dl class="detalhes" id="detalhes"></dl>
+    </div>
+    <div class="painel">
+      <h2 style="margin-top:0">Autenticidade</h2>
+      <p id="texto-autenticidade" style="margin:0 0 10px;font-size:14px;color:var(--tinta2)"></p>
+      <div class="botoes" style="margin:0">
+        <a class="btn pequeno" id="lk-verificar" href="v/" target="_blank" rel="noopener">Abrir a página de verificação</a>
+        <button class="btn pequeno" id="bt-copiar-link">Copiar link de verificação</button>
+      </div>
+    </div>
+    <div class="botoes" style="justify-content:flex-end">
+      <button class="btn pequeno perigo" id="bt-remover">Remover deste aparelho</button>
+    </div>
+  </section>
+</main>
+
+<footer class="rodape">
+  <p>Carteirinha institucional, emitida pela própria instituição de ensino para uso interno. <strong>Não é a Carteira de Identificação Estudantil (CIE) da Lei 12.933/2013 e não dá direito à meia-entrada.</strong></p>
+  <p>Versão <span id="versao"></span> · <a href="https://github.com/DiogusVincere/cie_digital" rel="noopener">código-fonte</a></p>
+</footer>
+
+<!-- ======== diálogo: ativar ======== -->
+<dialog id="dlg-ativar">
+  <form method="dialog" class="dlg-corpo" style="position:relative">
+    <button class="dlg-fechar" value="fechar" aria-label="Fechar">×</button>
+    <h2>Ativar carteirinha</h2>
+    <p class="lead" style="font-size:14px">Use o que a secretaria mandou: o arquivo <code>.json</code>, o link de ativação ou o código.</p>
+    <div class="abas" role="tablist">
+      <button type="button" role="tab" aria-selected="true" data-aba="colar">Colar link ou código</button>
+      <button type="button" role="tab" aria-selected="false" data-aba="arquivo">Importar arquivo</button>
+    </div>
+    <div data-painel="colar">
+      <div class="campo"><label for="txt-ativacao">Link ou código de ativação</label><textarea id="txt-ativacao" placeholder="https://…/#ativar=… ou o código"></textarea></div>
+    </div>
+    <div data-painel="arquivo" hidden>
+      <div class="campo"><label for="arq-ativacao">Arquivo de ativação (.json)</label><input type="file" id="arq-ativacao" accept=".json,application/json"></div>
+    </div>
+    <p class="erro-form" id="erro-ativacao" hidden></p>
+    <div class="botoes" style="margin-bottom:0">
+      <button type="button" class="btn principal" id="bt-confirmar-ativacao">Ativar</button>
+      <button type="button" class="btn" id="bt-exemplo-2">Usar o exemplo</button>
+    </div>
+  </form>
+</dialog>
+
+<!-- ======== diálogo: QR ======== -->
+<dialog id="dlg-qr" class="dlg-qr">
+  <div class="dlg-corpo" style="position:relative">
+    <button class="dlg-fechar" id="bt-fechar-qr" aria-label="Fechar">×</button>
+    <div class="qr-grande" id="qr-grande"></div>
+    <div class="qr-nome" id="qr-nome"></div>
+    <div class="qr-sub" id="qr-sub"></div>
+    <p style="font-size:13px;color:#4E635E;margin:10px 0 0">Mostre esta tela com o brilho alto. Quem verifica aponta a câmera e confere a assinatura da instituição.</p>
+  </div>
+</dialog>
+
+<script type="module" src="app.js"></script>
+</body>
+</html>
